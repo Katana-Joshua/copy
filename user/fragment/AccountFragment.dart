@@ -6,11 +6,8 @@ import '../../extensions/extension_util/list_extensions.dart';
 import '../../extensions/extension_util/string_extensions.dart';
 import '../../extensions/extension_util/widget_extensions.dart';
 import '../../main/screens/CustomerSupportScreen.dart';
-import '../../main/screens/RefferalHistoryScreen.dart';
-import '../../main/screens/RewardListScreen.dart';
 import '../../user/screens/ClaimListScreen.dart';
 import '../../user/screens/PageDetailScreen.dart';
-import '../../user/screens/refer_earn_screen.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../extensions/animatedList/animated_configurations.dart';
@@ -27,7 +24,6 @@ import '../../main/components/theme_selection_dialog.dart';
 import '../../main/models/PageListModel.dart';
 import '../../main/network/RestApis.dart';
 import '../../main/screens/AboutUsScreen.dart';
-import '../../main/screens/BankDetailScreen.dart';
 import '../../main/screens/ChangePasswordScreen.dart';
 import '../../main/screens/EditProfileScreen.dart';
 import '../../main/screens/LanguageScreen.dart';
@@ -168,9 +164,6 @@ class AccountFragmentState extends State<AccountFragment> {
                     },
                     isLast: true,
                   ),
-                  /*accountSettingItemWidget(ic_bank_detail, language.favouriteStore, () {
-                    FavouriteStoreScreen().launch(context);
-                  }, isLast: true),*/
                   mTitle(language.account),
                   accountSettingItemWidget(ic_change_password, language.changePassword, () {
                     ChangePasswordScreen().launch(context);
@@ -184,13 +177,6 @@ class AccountFragmentState extends State<AccountFragment> {
                         builder: (_) => ThemeSelectionDialog(),
                         contentPadding: EdgeInsets.zero);
                   }),
-                  accountSettingItemWidget(
-                    ic_bank_detail,
-                    language.bankDetails,
-                    () {
-                      BankDetailScreen().launch(context);
-                    },
-                  ),
                   accountSettingItemWidget(ic_delete_account, language.deleteAccount, () async {
                     DeleteAccountScreen().launch(context);
                   }, isLast: true),
@@ -198,18 +184,9 @@ class AccountFragmentState extends State<AccountFragment> {
                   accountSettingItemWidget(ic_change_password, language.customerSupport, () {
                     CustomerSupportScreen().launch(context);
                   }),
-                  accountSettingItemWidget(ic_earn, language.referAndEarn, () {
-                    ReferEarnScreen().launch(context);
-                  }),
-                  accountSettingItemWidget(ic_refer_history, language.referralHistory, () {
-                    ReferralHistoryScreen().launch(context);
-                  }),
                   accountSettingItemWidget(ic_claim, language.claimHistory, () {
                     ClaimListScreen().launch(context);
                   }),
-                  accountSettingItemWidget(ic_change_password, language.earnedRewards, () {
-                    RewardListScreen().launch(context);
-                  }, isLast: true),
                   mTitle(language.general),
                   accountSettingItemWidget(ic_document, language.privacyPolicy, () {
                     commonLaunchUrl(mPrivacyPolicy);

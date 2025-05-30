@@ -108,16 +108,6 @@ const digitAfterDecimal = 2;
 const mBaseUrl = "$DOMAIN_URL/api/";
 //endregion
 
-//region bank list
-const BANK_LIST = [
-  'HDFC',
-  'Bank of baroda',
-  'State bank of india',
-  'Bank of India',
-  'Indian Bank',
-];
-//endregion
-
 //region SharedReference keys
 const IS_LOGGED_IN = 'IS_LOGIN';
 const IS_FIRST_TIME = 'IS_FIRST_TIME';

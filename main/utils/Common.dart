@@ -124,36 +124,6 @@ enum LinkProvider {
   GOOGLE_DRIVE
 }
 
-/// Use getSocialMediaLink function to build social media links
-// String getSocialMediaLink(LinkProvider linkProvider, {String url = ''}) {
-//   switch (linkProvider) {
-//     case LinkProvider.PLAY_STORE:
-//       return "$playStoreBaseURL$url";
-//     case LinkProvider.APPSTORE:
-//       return "$appStoreBaseURL$url";
-//     case LinkProvider.FACEBOOK:
-//       return "$facebookBaseURL$url";
-//     case LinkProvider.INSTAGRAM:
-//       return "$instagramBaseURL$url";
-//     case LinkProvider.LINKEDIN:
-//       return "$linkedinBaseURL$url";
-//     case LinkProvider.TWITTER:
-//       return "$twitterBaseURL$url";
-//     case LinkProvider.YOUTUBE:
-//       return "$youtubeBaseURL$url";
-//     case LinkProvider.REDDIT:
-//       return "$redditBaseURL$url";
-//     case LinkProvider.TELEGRAM:
-//       return "$telegramBaseURL$url";
-//     case LinkProvider.FB_MESSENGER:
-//       return "$facebookMessengerURL$url";
-//     case LinkProvider.WHATSAPP:
-//       return "$whatsappURL$url";
-//     case LinkProvider.GOOGLE_DRIVE:
-//       return "$googleDriveURL$url";
-//   }
-// }
-
 const double degrees2Radians = pi / 180.0;
 
 double radians(double degrees) => degrees * degrees2Radians;
@@ -340,64 +310,6 @@ Uri mailTo({
   );
 }
 
-// Widget dotIndicator(list, i, {bool isPersonal = false}) {
-//   return SizedBox(
-//     height: 16,
-//     child: Row(
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(
-//         list.length,
-//         (ind) {
-//           return Container(
-//             height: 4,
-//             width: i == ind ? 30 : 12,
-//             margin: EdgeInsets.all(4),
-//             decoration: BoxDecoration(
-//                 color: i == ind
-//                     ? appStore.isDarkMode == true
-//                         ? colorPrimary
-//                         : colorPrimary
-//                     : primaryVariant,
-//                 borderRadius: radius(4)),
-//           );
-//         },
-//       ),
-//     ),
-//   );
-// }
-
-// Widget lineIndicator(list, i, {bool isPersonal = false}) {
-//   return SizedBox(
-//     height: 16,
-//     child: Row(
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: List.generate(
-//         5,
-//         //  list.length,
-//         (ind) {
-//           return Container(
-//             height: 4,
-//             width: 50,
-//             // width: i == ind ? 30 : 12,
-//             margin: EdgeInsets.all(4),
-//             decoration: BoxDecoration(
-//                 color: i == ind
-//                     ? appStore.isDarkMode == true
-//                         ? Colors.white
-//                         : i == ind
-//                             ? colorPrimary
-//                             : lightBackgroundColor
-//                     : Colors.grey.withOpacity(0.5),
-//                 borderRadius: radius(4)),
-//           );
-//         },
-//       ),
-//     ),
-//   );
-// }
-
 /// returns true if network is available
 Future<bool> isNetworkAvailable() async {
   var connectivityResult = await Connectivity().checkConnectivity();
@@ -456,23 +368,6 @@ void toast(
   }
 }
 
-// Widget emptyWidget() {
-//   return Center(
-//       child: Column(
-//     mainAxisAlignment: MainAxisAlignment.center,
-//     children: [
-//       Image.asset(
-//         no_data,
-//         scale: 6,
-//         // height: context.height * 0.2 , width: context.width() * 0.4
-//       ),
-//       16.height,
-//       Text(language.noData, style: boldTextStyle()),
-//       50.height
-//     ],
-//   ));
-// }
-
 Future<bool> checkPermission() async {
   // Request app level location permission
   LocationPermission locationPermission = await Geolocator.requestPermission();
@@ -510,7 +405,7 @@ Future<void> getCurrentLocationData({Function()? onUpdate}) async {
 
 // Calculate service charge (5%)
 double calculateServiceCharge(double amount) {
-  return (amount * 0.05);
+  return (amount * SERVICE_CHARGE_PERCENTAGE);
 }
 
 // Calculate amount with service charge for client
@@ -528,7 +423,452 @@ double calculatePartialServiceCharge(double amount) {
   return calculateServiceCharge(amount) / 2;
 }
 
-Color getClaimStatus(String status) {
+Color statusColor(String status) {
+  Color color = ColorUtils.colorPrimary;
+  switch (status) {
+    case ORDER_ACCEPTED:
+      return acceptColor;
+    case ORDER_CREATED:
+      return CreatedColorColor;
+    case ORDER_DEPARTED:
+      return acceptColor;
+    case ORDER_ASSIGNED:
+      return pendingApprovalColorColor;
+    case ORDER_PICKED_UP:
+      return in_progressColor;
+    case ORDER_ARRIVED:
+      return in_progressColor;
+    case ORDER_CANCELLED:
+      return cancelledColor;
+    case ORDER_DELIVERED:
+      return completedColor;
+    case ORDER_DRAFT:
+      return holdColor;
+    case ORDER_DELAYED:
+      return WaitingStatusColor;
+  }
+  return color;
+}
+
+Color paymentStatusColor(String status) {
+  Color color = ColorUtils.colorPrimary;
+  if (status == PAYMENT_PAID) {
+    color = Colors.green;
+  } else if (status == PAYMENT_FAILED) {
+    color = Colors.red;
+  } else if (status == PAYMENT_PENDING) {
+    color = ColorUtils.colorPrimary;
+  }
+  return color;
+}
+
+String parcelTypeIcon(String? parcelType) {
+  String icon = 'assets/icons/ic_product.png';
+  switch (parcelType.validate().toLowerCase()) {
+    case "documents":
+      return 'assets/icons/ic_document.png';
+    case "document":
+      return 'assets/icons/ic_document.png';
+    case "food":
+      return 'assets/icons/ic_food.png';
+    case "foods":
+      return 'assets/icons/ic_food.png';
+    case "cake":
+      return 'assets/icons/ic_cake.png';
+    case "flowers":
+      return 'assets/icons/ic_flower.png';
+    case "flower":
+      return 'assets/icons/ic_flower.png';
+  }
+  return icon;
+}
+
+String printDate(String date) {
+  return DateFormat('dd MMM yyyy').format(DateTime.parse(date).toLocal()) + " at " + DateFormat('hh:mm a').format(DateTime.parse(date).toLocal());
+}
+
+String printDateWithoutAt(String date) {
+  return DateFormat('dd MMM yyyy').format(DateTime.parse(date).toLocal()) + " " + DateFormat('hh:mm a').format(DateTime.parse(date).toLocal());
+}
+
+Widget loaderWidget() {
+  return Center(
+    child: LoadingAnimationWidget.hexagonDots(
+      color: ColorUtils.colorPrimary,
+      size: 50,
+    ),
+  );
+}
+
+Widget emptyWidget() {
+  return Center(child: Image.asset(ic_no_data, width: 80, height: 80, color: ColorUtils.colorPrimary));
+}
+
+String orderStatus(String orderStatus) {
+  if (orderStatus == ORDER_ASSIGNED) {
+    return language.assigned;
+  } else if (orderStatus == ORDER_DRAFT) {
+    return language.draft;
+  } else if (orderStatus == ORDER_CREATED) {
+    return language.created;
+  } else if (orderStatus == ORDER_ACCEPTED) {
+    return language.accepted;
+  } else if (orderStatus == ORDER_PICKED_UP) {
+    return language.pickedUp;
+  } else if (orderStatus == ORDER_ARRIVED) {
+    return language.arrived;
+  } else if (orderStatus == ORDER_DEPARTED) {
+    return language.departed;
+  } else if (orderStatus == ORDER_DELIVERED) {
+    return language.delivered;
+  } else if (orderStatus == ORDER_CANCELLED) {
+    return language.cancelled;
+  } else if (orderStatus == ORDER_SHIPPED) {
+    return language.shipped;
+  }
+  return language.assigned;
+}
+
+String countName(String count) {
+  if (count == TODAY_ORDER) {
+    return language.todayOrder;
+  } else if (count == REMAINING_ORDER) {
+    return language.remainingOrder;
+  } else if (count == COMPLETED_ORDER) {
+    return language.completedOrder;
+  } else if (count == INPROGRESS_ORDER) {
+    return language.inProgressOrder;
+  } else if (count == TOTAL_EARNING) {
+    return language.commission;
+  } else if (count == WALLET_BALANCE) {
+    return language.walletBalance;
+  } else if (count == PENDING_WITHDRAW_REQUEST) {
+    return language.pendingWithdReq;
+  } else if (count == COMPLETED_WITHDRAW_REQUEST) {
+    return language.completedWithReq;
+  }
+  return "";
+}
+
+String transactionType(String type) {
+  if (type == TRANSACTION_ORDER_FEE) {
+    return language.orderFee;
+  } else if (type == TRANSACTION_TOPUP) {
+    return language.topup;
+  } else if (type == TRANSACTION_ORDER_CANCEL_CHARGE) {
+    return language.orderCancelCharge;
+  } else if (type == TRANSACTION_ORDER_CANCEL_REFUND) {
+    return language.orderCancelRefund;
+  } else if (type == TRANSACTION_CORRECTION) {
+    return language.correction;
+  } else if (type == TRANSACTION_COMMISSION) {
+    return language.commission;
+  } else if (type == TRANSACTION_WITHDRAW) {
+    return language.withdraw;
+  } else if (type == TRANSACTION_SERVICE_CHARGE) {
+    return language.serviceCharge;
+  } else if (type == TRANSACTION_PICKUP_SERVICE_CHARGE) {
+    return "Pickup " + language.serviceCharge;
+  } else if (type == TRANSACTION_DELIVERY_SERVICE_CHARGE) {
+    return "Delivery " + language.serviceCharge;
+  }
+  return type;
+}
+
+oneSignalSettings() async {
+  if (isMobile) {
+    PermissionStatus status = await Permission.notification.status;
+    if (!status.isGranted) {
+      await Permission.notification.request();
+    }
+
+    OneSignal.Debug.setLogLevel(OSLogLevel.verbose);
+    OneSignal.Debug.setAlertLevel(OSLogLevel.none);
+    OneSignal.consentRequired(false);
+    OneSignal.initialize(mOneSignalAppId);
+    OneSignal.Notifications.requestPermission(true);
+    saveOneSignalPlayerId();
+    OneSignal.Notifications.addPermissionObserver((state) {
+      print("Has permission " + state.toString());
+    });
+    OneSignal.Notifications.addClickListener((notification) async {
+      var notId = notification.notification.additionalData!["id"];
+      if (notId != null) {
+        if (!appStore.isLoggedIn) {
+          LoginScreen().launch(getContext);
+        } else if (notId.toString().contains('CHAT')) {
+          UserData user = await getUserDetail(int.parse(notId.toString().replaceAll("CHAT_", "")));
+          ChatScreen(userData: user).launch(getContext);
+        } else {
+          OrderDetailScreen(orderId: int.parse(notId.toString())).launch(getContext);
+        }
+      }
+    });
+    OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+      print('NOTIFICATION WILL DISPLAY LISTENER CALLED WITH: ${event.notification.jsonRepresentation()}');
+      event.preventDefault();
+      event.notification.display();
+      if (event.notification.additionalData!["type"].toString().contains(ORDER_TRANSFER) || event.notification.additionalData!["type"].toString().contains(ORDER_ASSIGNED)) {
+        if (getStringAsync(USER_TYPE) == DELIVERY_MAN) {
+          playSoundForDuration();
+        }
+      }
+    });
+  }
+}
+
+// Method to play the sound for 60 seconds
+void playSoundForDuration() async {
+  print("===========type=====================${getStringAsync(USER_TYPE)}");
+  try {
+    FlutterRingtonePlayer().play(fromAsset: "assets/ringtone/ringtone.mp3", looping: true);
+    await Future.delayed(Duration(seconds: 60));
+    FlutterRingtonePlayer().stop();
+  } catch (e) {
+    print('Error playing sound: $e');
+  }
+}
+
+Future<void> saveOneSignalPlayerId() async {
+  OneSignal.User.pushSubscription.addObserver((state) async {
+    print(OneSignal.User.pushSubscription.optedIn);
+    print("Player Id" + OneSignal.User.pushSubscription.id.toString());
+    print(OneSignal.User.pushSubscription.token);
+    print(state.current.jsonRepresentation());
+
+    if (OneSignal.User.pushSubscription.id.validate().isNotEmpty) await setValue(PLAYER_ID, OneSignal.User.pushSubscription.id.validate());
+  });
+}
+
+String statusTypeIcon({String? type}) {
+  String icon = ic_order;
+  if (type == ORDER_ASSIGNED) {
+    icon = ic_order_assigned;
+  } else if (type == ORDER_ACCEPTED) {
+    icon = ic_order_accept;
+  } else if (type == ORDER_PICKED_UP) {
+    icon = ic_order_pickedUp;
+  } else if (type == ORDER_ARRIVED) {
+    icon = ic_order_arrived;
+  } else if (type == ORDER_DEPARTED) {
+    icon = ic_order_departed;
+  } else if (type == ORDER_DELIVERED) {
+    icon = ic_order_delivered;
+  } else if (type == ORDER_CANCELLED) {
+    icon = ic_order_cancelled;
+  } else if (type == ORDER_CREATED) {
+    icon = ic_order_created;
+  } else if (type == ORDER_DRAFT) {
+    icon = ic_order_draft;
+  } else if (type == ORDER_TRANSFER) {
+    icon = ic_order_transfer;
+  }
+  return icon;
+}
+
+String? orderTitle(String orderStatus) {
+  if (orderStatus == ORDER_ASSIGNED) {
+    return language.orderAssignConfirmation;
+  } else if (orderStatus == ORDER_ACCEPTED) {
+    return language.orderPickupConfirmation;
+  } else if (orderStatus == ORDER_PICKED_UP) {
+    return language.orderDepartedConfirmation;
+  } else if (orderStatus == ORDER_ARRIVED) {
+    return language.orderPickupConfirmation;
+  } else if (orderStatus == ORDER_DEPARTED) {
+    return language.orderCompleteConfirmation;
+  } else if (orderStatus == ORDER_DELIVERED) {
+    return '';
+  } else if (orderStatus == ORDER_CANCELLED) {
+    return language.orderCancelConfirmation;
+  } else if (orderStatus == ORDER_CREATED) {
+    return language.orderCreateConfirmation;
+  }
+  return '';
+}
+
+String dateParse(String date) {
+  return DateFormat.yMd().add_jm().format(DateTime.parse(date).toLocal());
+}
+
+bool get isRTL => rtlLanguage.contains(appStore.selectedLanguage);
+
+num countExtraCharge({required num totalAmount, required String chargesType, required num charges}) {
+  if (chargesType == CHARGE_TYPE_PERCENTAGE) {
+    return (totalAmount * charges * 0.01).toStringAsFixed(digitAfterDecimal).toDouble();
+  } else {
+    return charges.toStringAsFixed(digitAfterDecimal).toDouble();
+  }
+}
+
+String paymentStatus(String paymentStatus) {
+  if (paymentStatus.toLowerCase() == PAYMENT_PENDING.toLowerCase()) {
+    return language.pending;
+  } else if (paymentStatus.toLowerCase() == PAYMENT_FAILED.toLowerCase()) {
+    return language.failed;
+  } else if (paymentStatus.toLowerCase() == PAYMENT_PAID.toLowerCase()) {
+    return language.paid;
+  }
+  return language.pending;
+}
+
+String? paymentCollectForm(String paymentType) {
+  if (paymentType.toLowerCase() == PAYMENT_ON_PICKUP.toLowerCase()) {
+    return language.onPickup;
+  } else if (paymentType.toLowerCase() == PAYMENT_ON_DELIVERY.toLowerCase()) {
+    return language.onDelivery;
+  }
+  return language.onPickup;
+}
+
+String paymentType(String paymentType) {
+  if (paymentType.toLowerCase() == PAYMENT_TYPE_STRIPE.toLowerCase()) {
+    return language.stripe;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_RAZORPAY.toLowerCase()) {
+    return language.razorpay;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_PAYSTACK.toLowerCase()) {
+    return language.payStack;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_FLUTTERWAVE.toLowerCase()) {
+    return language.flutterWave;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_MERCADOPAGO.toLowerCase()) {
+    return language.mercadoPago;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_PAYPAL.toLowerCase()) {
+    return language.paypal;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_PAYTABS.toLowerCase()) {
+    return language.payTabs;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_PAYTM.toLowerCase()) {
+    return language.paytm;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_MYFATOORAH.toLowerCase()) {
+    return language.myFatoorah;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_CASH.toLowerCase()) {
+    return language.cash;
+  } else if (paymentType.toLowerCase() == PAYMENT_TYPE_WALLET.toLowerCase()) {
+    return language.wallet;
+  }
+  return language.cash;
+}
+
+String printAmount(var amount) {
+  return appStore.currencyPosition == CURRENCY_POSITION_LEFT ? '${appStore.currencySymbol} ${amount.toStringAsFixed(digitAfterDecimal)}' : '${amount.toStringAsFixed(digitAfterDecimal)} ${appStore.currencySymbol}';
+}
+
+Future<void> commonLaunchUrl(String url, {bool forceWebView = false}) async {
+  log(url);
+  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication).then((value) {}).catchError((e) {
+    toast('${language.invalidUrl}: $url');
+  });
+}
+
+cashConfirmDialog() {
+  showInDialog(
+    getContext,
+    contentPadding: EdgeInsets.all(16),
+    builder: (p0) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(language.balanceInsufficientCashPayment, style: primaryTextStyle(size: 16), textAlign: TextAlign.center),
+          30.height,
+          commonButton(language.ok, () {
+            finish(getContext);
+          }),
+        ],
+      );
+    },
+  );
+}
+
+Future deleteAccount(BuildContext context) async {
+  appStore.setLoading(true);
+  await userService.removeDocument(getStringAsync(UID)).then((value) async {
+    await deleteUserFirebase().then((value) async {
+      Map deleteAccountReq = {"id": getIntAsync(USER_ID), "type": "forcedelete"};
+      await userAction(deleteAccountReq).then((value) async {
+        await logout(context, isDeleteAccount: true).then((value) async {
+          appStore.setLoading(false);
+          await removeKey(USER_EMAIL);
+          await removeKey(USER_PASSWORD);
+        });
+      });
+    }).catchError((error) {
+      appStore.setLoading(false);
+      toast(error.toString());
+    });
+  }).catchError((error) {
+    appStore.setLoading(false);
+    toast(error.toString());
+  });
+}
+
+String timeAgo(String date) {
+  if (date.contains("week ago")) {
+    return date.splitBefore("week ago").trim() + "w";
+  }
+  if (date.contains("year ago")) {
+    return date.splitBefore("year ago").trim() + "y";
+  }
+  if (date.contains("month ago")) {
+    return date.splitBefore("month ago").trim() + "m";
+  }
+  return date.toString();
+}
+
+String getMessageFromErrorCode(FirebaseException error) {
+  switch (error.code) {
+    case "ERROR_EMAIL_ALREADY_IN_USE":
+    case "account-exists-with-different-credential":
+    case "email-already-in-use":
+      return "The email address is already in use by another account.";
+    case "ERROR_WRONG_PASSWORD":
+    case "wrong-password":
+      return "Wrong email/password combination.";
+    case "ERROR_USER_NOT_FOUND":
+    case "user-not-found":
+      return "No user found with this email.";
+    case "ERROR_USER_DISABLED":
+    case "user-disabled":
+      return "User disabled.";
+    case "ERROR_TOO_MANY_REQUESTS":
+    case "operation-not-allowed":
+      return "Too many requests to log into this account.";
+    case "ERROR_OPERATION_NOT_ALLOWED":
+    case "operation-not-allowed":
+      return "Server error, please try again later.";
+    case "ERROR_INVALID_EMAIL":
+    case "invalid-email":
+      return "Email address is invalid.";
+    default:
+      return error.message.toString();
+  }
+}
+
+List<String> userTypeList = [CLIENT, DELIVERY_MAN];
+
+Future<void> openMap(double originLatitude, double originLongitude, double destinationLatitude, double destinationLongitude) async {
+  String googleUrl = 'https://www.google.com/maps/dir/?api=1&origin=$originLatitude,$originLongitude&destination=$destinationLatitude,$destinationLongitude';
+
+  if (await canLaunchUrl(Uri.parse(googleUrl))) {
+    await launchUrl(Uri.parse(googleUrl));
+  } else {
+    throw language.mapLoadingError;
+  }
+}
+
+Future<BitmapDescriptor> createMarkerIconFromAsset(String assetPath) async {
+  final ByteData data = await rootBundle.load(assetPath);
+  final Uint8List bytes = data.buffer.asUint8List();
+  return BitmapDescriptor.fromBytes(bytes);
+}
+
+Color colorFromHex(String hexColor) {
+  hexColor = hexColor.toUpperCase().replaceAll("#", "");
+  if (hexColor.length == 6) {
+    hexColor = "FF$hexColor";
+  }
+  return Color(int.parse(hexColor, radix: 16));
+}
+
+dynamic getClaimStatus(String status) {
   if (status == STATUS_PENDING) {
     return Text(status, style: boldTextStyle(color: pendingColor));
   } else if (status == STATUS_IN_REVIEW) {
@@ -541,4 +881,3 @@ Color getClaimStatus(String status) {
     return Text(status, style: boldTextStyle(color: completedColor));
   }
 }
-//List<String> SUPPORT_TYPE = ["Vehicle", "Orders", "Delivery person"];

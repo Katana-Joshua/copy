@@ -6,7 +6,6 @@ import '../../extensions/extension_util/int_extensions.dart';
 import '../../extensions/extension_util/string_extensions.dart';
 import '../../extensions/extension_util/widget_extensions.dart';
 import '../../main/models/LoginResponse.dart';
-import '../../delivery/screens/WithDrawScreen.dart';
 import '../../extensions/animatedList/animated_list_view.dart';
 import '../../extensions/app_text_field.dart';
 import '../../extensions/common.dart';
@@ -18,7 +17,6 @@ import '../../main.dart';
 import '../../main/components/CommonScaffoldComponent.dart';
 import '../../main/models/WalletListModel.dart';
 import '../../main/network/RestApis.dart';
-import '../../main/screens/BankDetailScreen.dart';
 import '../../main/utils/Common.dart';
 import '../../main/utils/Constants.dart';
 import '../../main/utils/Widgets.dart';
@@ -34,8 +32,8 @@ class WalletScreen extends StatefulWidget {
 
 class WalletScreenState extends State<WalletScreen> {
   TextEditingController amountCont = TextEditingController();
-
-  UserBankAccount? userBankAccount;
+  TextEditingController withdrawAmountCont = TextEditingController();
+  TextEditingController withdrawNotesCont = TextEditingController();
 
   List<WalletModel> walletData = [];
   ScrollController scrollController = ScrollController();
@@ -51,7 +49,6 @@ class WalletScreenState extends State<WalletScreen> {
   }
 
   init() async {
-    getBankDetail();
     getWalletData();
     scrollController.addListener(() {
       if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
@@ -62,14 +59,6 @@ class WalletScreenState extends State<WalletScreen> {
           getWalletData();
         }
       }
-    });
-  }
-
-  getBankDetail() async {
-    await getUserDetail(getIntAsync(USER_ID)).then((value) {
-      userBankAccount = value.userBankAccount;
-    }).then((value) {
-      log(value);
     });
   }
 
@@ -89,6 +78,37 @@ class WalletScreenState extends State<WalletScreen> {
     }).catchError((error) {
       appStore.setLoading(false);
       log(error.toString());
+    });
+  }
+
+  Future<void> withdrawMoney() async {
+    if (withdrawAmountCont.text.isEmpty) {
+      return toast(language.addAmount);
+    }
+    
+    if (double.parse(withdrawAmountCont.text) > totalAmount) {
+      return toast(language.balanceInsufficient);
+    }
+    
+    appStore.setLoading(true);
+    
+    Map req = {
+      "user_id": getIntAsync(USER_ID),
+      "currency": appStore.currencyCode.toLowerCase(),
+      "amount": double.parse(withdrawAmountCont.text),
+      "status": REQUESTED,
+      "description": withdrawNotesCont.text,
+    };
+    
+    await saveWithDrawRequest(req).then((value) {
+      toast(value.message);
+      withdrawAmountCont.clear();
+      withdrawNotesCont.clear();
+      appStore.setLoading(false);
+      getWalletData();
+    }).catchError((error) {
+      toast(error.toString());
+      appStore.setLoading(false);
     });
   }
 
@@ -209,23 +229,122 @@ class WalletScreenState extends State<WalletScreen> {
           ],
         ),
         bottomNavigationBar: totalAmount != 0
-            ? commonButton(
-                language.withdrawHistory,
-                () {
-                  if (userBankAccount != null)
-                    WithDrawScreen(
-                      onTap: () {
-                        init();
-                      },
-                    ).launch(context);
-                  else {
-                    toast(language.bankNotFound);
-                    BankDetailScreen(isWallet: true).launch(context).then((value) {
-                      init();
-                    });
-                  }
-                },
-              ).paddingSymmetric(horizontal: 16, vertical: 8)
+            ? Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: commonButton(
+                        language.addMoney,
+                        () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                insetPadding: EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(language.addMoney, style: boldTextStyle(size: 18)),
+                                    Divider(color: context.dividerColor),
+                                    16.height,
+                                    Text(language.amount, style: primaryTextStyle()),
+                                    8.height,
+                                    AppTextField(
+                                      controller: amountCont,
+                                      textFieldType: TextFieldType.PHONE,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                      decoration: commonInputDecoration(),
+                                    ),
+                                    16.height,
+                                    commonButton(
+                                      language.add,
+                                      () async {
+                                        if (amountCont.text.isNotEmpty) {
+                                          Navigator.pop(context);
+                                          bool? res = await PaymentScreen(
+                                            totalAmount: amountCont.text.toDouble(),
+                                            isWallet: true,
+                                          ).launch(context);
+                                          if (res == true) {
+                                            getWalletData();
+                                          }
+                                        } else {
+                                          toast(language.addAmount);
+                                        }
+                                      },
+                                      width: context.width(),
+                                    ),
+                                    16.height,
+                                  ],
+                                ).paddingAll(16),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    16.width,
+                    Expanded(
+                      child: commonButton(
+                        language.withdraw,
+                        () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                insetPadding: EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(language.withdrawMoney, style: boldTextStyle(size: 18)),
+                                    Divider(color: context.dividerColor),
+                                    16.height,
+                                    Text(language.amount, style: primaryTextStyle()),
+                                    8.height,
+                                    AppTextField(
+                                      controller: withdrawAmountCont,
+                                      textFieldType: TextFieldType.PHONE,
+                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                      decoration: commonInputDecoration(),
+                                    ),
+                                    16.height,
+                                    Text(language.notes, style: primaryTextStyle()),
+                                    8.height,
+                                    AppTextField(
+                                      controller: withdrawNotesCont,
+                                      textFieldType: TextFieldType.MULTILINE,
+                                      minLines: 3,
+                                      maxLines: 5,
+                                      decoration: commonInputDecoration(),
+                                    ),
+                                    16.height,
+                                    commonButton(
+                                      language.withdraw,
+                                      () {
+                                        if (withdrawAmountCont.text.isNotEmpty) {
+                                          Navigator.pop(context);
+                                          withdrawMoney();
+                                        } else {
+                                          toast(language.addAmount);
+                                        }
+                                      },
+                                      width: context.width(),
+                                    ),
+                                    16.height,
+                                  ],
+                                ).paddingAll(16),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              )
             : SizedBox(),
       ),
     );

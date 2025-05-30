@@ -85,8 +85,6 @@ class EscrowService extends BaseService {
       'created_at': Timestamp.now(),
     });
     
-    // Update user's wallet balance
-    // Note: This is a simplified version. In a real app, you'd need to update the user's wallet balance in your database
     log("Added $amount to delivery man $deliveryManId's wallet for order $orderId");
   }
 
@@ -101,8 +99,6 @@ class EscrowService extends BaseService {
       'created_at': Timestamp.now(),
     });
     
-    // Update client's wallet balance
-    // Note: This is a simplified version. In a real app, you'd need to update the client's wallet balance in your database
     log("Deducted $amount from client $clientId's wallet for order $orderId");
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import '../../delivery/screens/AddDeliverymanVehicleScreen.dart';
 import '../../extensions/extension_util/context_extensions.dart';
 import '../../extensions/extension_util/int_extensions.dart';
@@ -27,12 +28,10 @@ import '../../main/components/theme_selection_dialog.dart';
 import '../../main/models/PageListModel.dart';
 import '../../main/network/RestApis.dart';
 import '../../main/screens/AboutUsScreen.dart';
-import '../../main/screens/BankDetailScreen.dart';
 import '../../main/screens/ChangePasswordScreen.dart';
 import '../../main/screens/CustomerSupportScreen.dart';
 import '../../main/screens/EditProfileScreen.dart';
 import '../../main/screens/LanguageScreen.dart';
-import '../../main/screens/RefferalHistoryScreen.dart';
 import '../../main/utils/Common.dart';
 import '../../main/utils/Constants.dart';
 import '../../main/utils/Images.dart';
@@ -40,7 +39,6 @@ import '../../main/utils/dynamic_theme.dart';
 import '../../user/screens/DeleteAccountScreen.dart';
 import '../../user/screens/PageDetailScreen.dart';
 import '../../user/screens/WalletScreen.dart';
-import '../../user/screens/refer_earn_screen.dart';
 import '../screens/EarningHistoryScreen.dart';
 import '../screens/SelectVehicleScreen.dart';
 import '../screens/VerifyDeliveryPersonScreen.dart';
@@ -253,18 +251,6 @@ class DProfileFragmentState extends State<DProfileFragment> {
                           ic_earning, language.earningHistory, () {
                         EarningHistoryScreen().launch(context);
                       }),
-                      accountSettingItemWidget(
-                          ic_change_password, language.earnedRewards, () {
-                        RewardListScreen().launch(context);
-                      }),
-                      accountSettingItemWidget(ic_earn, language.referAndEarn,
-                          () {
-                        ReferEarnScreen().launch(context);
-                      }),
-                      accountSettingItemWidget(
-                          ic_refer_history, language.referralHistory, () {
-                        ReferralHistoryScreen().launch(context);
-                      }),
                       accountSettingItemWidget(ic_wallet, language.wallet, () {
                         WalletScreen().launch(context);
                       }),
@@ -272,10 +258,6 @@ class DProfileFragmentState extends State<DProfileFragment> {
                           ic_vehicle_list, language.vehicleHistory, () {
                         SelectVehicleScreen().launch(context);
                       }),
-                      accountSettingItemWidget(
-                          ic_bank_detail, language.bankDetails, () {
-                        BankDetailScreen().launch(context);
-                      }, isLast: true),
                       mTitle(language.account),
                       accountSettingItemWidget(
                           ic_verification, language.verifyDocument, () {
