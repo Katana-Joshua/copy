@@ -381,22 +381,37 @@ Future<OrderListModel> getDeliveryBoyOrderList(
     required int countryId,
     required int cityId,
     required String orderStatus}) async {
-  return OrderListModel.fromJson(await handleResponse(await buildHttpResponse(
-      'order-list?delivery_man_id=$deliveryBoyID&page=$page&city_id=$cityId&country_id=$countryId&status=$orderStatus',
-      method: HttpMethod.GET)));
+  String endPoint = 'order-list?delivery_man_id=$deliveryBoyID&page=$page&city_id=$cityId&country_id=$countryId';
+  
+  // Add status parameter only if it's not empty
+  if (orderStatus.isNotEmpty) {
+    endPoint += '&status=$orderStatus';
+  }
+  
+  print("Fetching delivery orders with endpoint: $endPoint"); // Debug log
+  
+  return OrderListModel.fromJson(await handleResponse(
+    await buildHttpResponse(endPoint, method: HttpMethod.GET)
+  ));
 }
 
 /// update status
 Future updateStatus({String? orderStatus, int? orderId}) async {
-  MultipartRequest multiPartRequest =
-      await getMultiPartRequest('order-update/$orderId');
+  appStore.setLoading(true);
+  
+  MultipartRequest multiPartRequest = await getMultiPartRequest('order-update/$orderId');
   multiPartRequest.fields['status'] = orderStatus.validate();
 
+  print("Updating order status: $orderStatus for order ID: $orderId"); // Debug log
+  
   await sendMultiPartRequest(multiPartRequest, onSuccess: (data) async {
+    appStore.setLoading(false);
     if (data != null) {
-      //
+      print("Order status updated successfully: $data"); // Debug log
     }
   }, onError: (error) {
+    appStore.setLoading(false);
+    print("Error updating order status: $error"); // Debug log
     toast(error.toString());
   });
 }
