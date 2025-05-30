@@ -116,6 +116,11 @@ class OrderAmountDataWidgetState extends State<OrderAmountDataWidget> {
     return (result * 100).round() / 100;
   }
 
+  double calculateFinalAmount() {
+    double amount = calculateTotalAmount();
+    // Add 5% service charge for client
+    return calculateAmountWithServiceCharge(amount);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,19 +264,48 @@ class OrderAmountDataWidgetState extends State<OrderAmountDataWidget> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text(language.subtotal,
+                  style: boldTextStyle(
+                    size: 16,
+                  )),
+              Text('${printAmount(calculateTotalAmount())}',
+                  style: boldTextStyle(
+                    size: 16,
+                  )),
+            ],
+          ),
+          8.height,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(language.serviceCharge,
+                  style: primaryTextStyle(
+                    color: Colors.red,
+                  )),
+              Text('${printAmount(calculateServiceCharge(calculateTotalAmount()))}',
+                  style: primaryTextStyle(
+                    color: Colors.red,
+                  )),
+            ],
+          ),
+          8.height,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Text(language.total,
                   style: boldTextStyle(
                     size: 18,
                     color: Colors.green,
                   )),
-              // Text('${printAmount((extraChargesTotal! + baseTotal + widget.insuranceAmount!.toDouble()))}',
-              Text('${appStore.currencySymbol} ${calculateTotalAmount()}',
+              Text('${printAmount(calculateFinalAmount())}',
                   style: boldTextStyle(
                     size: 18,
                     color: Colors.green,
                   )),
             ],
           ),
+          8.height,
+          Text(language.serviceChargeNote, style: secondaryTextStyle(size: 12, color: Colors.grey)),
         ],
       ),
     );

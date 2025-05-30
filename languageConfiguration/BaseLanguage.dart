@@ -1276,9 +1276,9 @@ class BaseLanguage {
 
   String get youPlaced => getContentValueFromKey(597);
 
-  String get customPrice => getContentValueFromKey(400);
+  String get customPrice => "Custom Price";
 
-  String get enterAmount => getContentValueFromKey(401);
+  String get enterAmount => "Enter Amount";
 
   String get filters => getContentValueFromKey(610);
   String get maxDistance => getContentValueFromKey(611);
@@ -1288,4 +1288,11 @@ class BaseLanguage {
   String get maxAmount => getContentValueFromKey(615);
   String get card => getContentValueFromKey(618);
   String get pleaseEnterBidAmount => getContentValueFromKey(616);
+  
+  // New service charge related strings
+  String get serviceCharge => "Service Charge (5%)";
+  String get serviceChargeNote => "A 5% service charge applies to all transactions. 2.5% is charged after pickup and 2.5% after delivery.";
+  String get clientBidAmount => "Client's Bid Amount";
+  String get youWillReceive => "You Will Receive";
+  String get subtotal => "Subtotal";
 }

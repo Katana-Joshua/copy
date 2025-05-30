@@ -33,9 +33,11 @@ import '../../extensions/text_styles.dart';
 import '../../extensions/widgets.dart';
 import '../../main.dart';
 import '../../main/components/CommonScaffoldComponent.dart';
+import '../../main/models/EscrowModel.dart';
 import '../../main/models/OrderListModel.dart';
 import '../../main/network/RestApis.dart';
 import '../../main/services/AuthServices.dart';
+import '../../main/services/EscrowService.dart';
 import '../../main/utils/Common.dart';
 import '../../main/utils/Constants.dart';
 import '../../main/utils/dynamic_theme.dart';
@@ -50,8 +52,7 @@ class ReceivedScreenOrderScreen extends StatefulWidget {
   ReceivedScreenOrderScreen({this.orderData, this.isShowPayment = false});
 
   @override
-  ReceivedScreenOrderScreenState createState() =>
-      ReceivedScreenOrderScreenState();
+  ReceivedScreenOrderScreenState createState() => ReceivedScreenOrderScreenState();
 }
 
 class ReceivedScreenOrderScreenState extends State<ReceivedScreenOrderScreen> {
@@ -82,6 +83,8 @@ class ReceivedScreenOrderScreenState extends State<ReceivedScreenOrderScreen> {
 
   List<File>? _image = [];
   final ImagePicker _picker = ImagePicker();
+  
+  EscrowService escrowService = EscrowService();
 
   @override
   void initState() {
@@ -161,7 +164,16 @@ class ReceivedScreenOrderScreenState extends State<ReceivedScreenOrderScreen> {
                 ? ORDER_DELIVERED
                 : ORDER_PICKED_UP,
             selectedFiles: _image)
-        .then((value) {
+        .then((value) async {
+      // Release service charge based on order status
+      if (widget.orderData!.status == ORDER_DEPARTED) {
+        // Order is being delivered, release delivery service charge
+        await escrowService.releaseDeliveryServiceCharge(widget.orderData!.id!);
+      } else {
+        // Order is being picked up, release pickup service charge
+        await escrowService.releasePickupServiceCharge(widget.orderData!.id!);
+      }
+      
       appStore.setLoading(false);
       toast(widget.orderData!.status == ORDER_DEPARTED
           ? language.orderDeliveredSuccessfully
@@ -181,16 +193,14 @@ class ReceivedScreenOrderScreenState extends State<ReceivedScreenOrderScreen> {
   @override
   Widget build(BuildContext context) {
     return CommonScaffoldComponent(
-      appBar: commonAppBarWidget(
-        widget.orderData!.status == ORDER_DEPARTED
-            ? language.orderDeliver
-            : language.orderPickup,
-        backWidget: IconButton(
-          onPressed: () {
-            finish(context, false);
-          },
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-        ),
+      appBarTitle: widget.orderData!.status == ORDER_DEPARTED
+          ? language.orderDeliver
+          : language.orderPickup,
+      backWidget: IconButton(
+        onPressed: () {
+          finish(context, false);
+        },
+        icon: Icon(Icons.arrow_back, color: Colors.white),
       ),
       body: Observer(builder: (context) {
         return Form(

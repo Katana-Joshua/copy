@@ -239,7 +239,16 @@ const TRANSACTION_ORDER_CANCEL_REFUND = "order_cancel_refund";
 const TRANSACTION_CORRECTION = "correction";
 const TRANSACTION_COMMISSION = "commission";
 const TRANSACTION_WITHDRAW = "withdraw";
+const TRANSACTION_DEPOSIT = "deposit";
+const TRANSACTION_SERVICE_CHARGE = "service_charge";
+const TRANSACTION_PICKUP_SERVICE_CHARGE = "pickup_service_charge";
+const TRANSACTION_DELIVERY_SERVICE_CHARGE = "delivery_service_charge";
 //endregion
+
+// Service charge constants
+const SERVICE_CHARGE_PERCENTAGE = 0.05; // 5%
+const PICKUP_SERVICE_CHARGE_PERCENTAGE = 0.025; // 2.5%
+const DELIVERY_SERVICE_CHARGE_PERCENTAGE = 0.025; // 2.5%
 
 const stripeURL = 'https://api.stripe.com/v1/payment_intents';
 
@@ -266,6 +275,8 @@ const ORDERS_MESSAGES_COLLECTION = "orderMessages";
 const USER_COLLECTION = "users";
 const CONTACT_COLLECTION = "contact";
 const CHAT_DATA_IMAGES = "chatImages";
+const WALLET_COLLECTION = "wallets";
+const ESCROW_COLLECTION = "escrow";
 //endregion
 
 //region chat
@@ -316,6 +327,7 @@ const CURRENCY_POSITION_LEFT = 'left';
 const CURRENCY_POSITION_RIGHT = 'right';
 //endregion
 const CREDIT = 'credit';
+const DEBIT = 'debit';
 
 const mStripeIdentifier = 'IN';
 const DISTANCE_UNIT_KM = 'km';
@@ -349,4 +361,4 @@ const FONT_SIZE_PREF = 'FONT_SIZE_PREF';
 const int cancelOrderDuration = 60;
 const STATUS_PENDING = 'pending';
 const STATUS_IN_REVIEW = 'inreview';
-const STATUS_REJECTED = 'reject'; 
+const STATUS_REJECTED = 'reject';
